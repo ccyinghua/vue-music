@@ -18,11 +18,27 @@ vue init webpack vue-music
 cnpm install
 npm run dev
 
-npm install stylus stylus-loader --save-dev  // 安装stylus处理css
+cnpm install stylus stylus-loader --save-dev  // 安装stylus处理css
+
+cnpm install babel-runtime --save  // 对ES语法进行转义 
+
+cnpm install fastclick --save  // 解决移动端一些body点击事件的延迟
+
+cnpm install babel-polyfill --save-dev  // 对ES6的一些新API转义，补丁
 
 ```
 ![](resource/1.jpg)
 
+1、安装fastclick之后，main.js入口文件
+```js
+import fastclick from 'fastclick'
+fastclick.attach(document.body);
+```
+2、安装babel-polyfill之后，main.js
+```js
+// 需放在第一行
+import 'babel-polyfill'
+```
 
 > 文件夹列表
 
@@ -39,6 +55,7 @@ npm install stylus stylus-loader --save-dev  // 安装stylus处理css
         | - js              -- js文件
         | - stylus          -- 样式文件
     | - components      -- 组件
+        | - m-header        -- header头部组件
     | - router          -- 路由配置文件
     | - store           -- vuex相关文件
     | - App.vue
@@ -52,6 +69,7 @@ npm install stylus stylus-loader --save-dev  // 安装stylus处理css
 
 ```javascript
 1、修改路径配置
+// webpack.base.conf.js
 alias: {
     '@': resolve('src'),
     'common': resolve('src/common'),
