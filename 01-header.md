@@ -36,6 +36,22 @@ Tab栏(components/tab/tab.vue)
   <span class="tab-link">搜索</span>
 </router-link>
 ```
+内容页面组件模板
+```html
+<template>
+  <div>
+    推荐页面
+  </div>
+</template>
+
+<script type="text/ecmascript-6">
+export default {}
+</script>
+
+<style scoped lang="stylus" rel="stylesheet/stylus">
+
+</style>
+```
 App.vue
 ```html
 <template>
@@ -93,13 +109,3 @@ export default new Router({
 ## <a id="3-页面效果"></a>3-页面效果
 
 ![](resource/1-header/2.jpg)
-
-
-
-
-
-
-
-
-
-

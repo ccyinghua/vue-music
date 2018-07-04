@@ -82,13 +82,11 @@ alias: {
     'base': resolve('src/base'),
     'api': resolve('src/api')
 }
-
-
 ```
 
 > Markdown说明文件
 
-[1-header头部组件与页面骨架](https://caniuse.com/#search=css%20var)
+[1-header头部组件与页面骨架](https://github.com/ccyinghua/vue-music/blob/master/01-header.md)
 
 
 
