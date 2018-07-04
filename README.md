@@ -56,6 +56,11 @@ import 'babel-polyfill'
         | - stylus          -- 样式文件
     | - components      -- 组件
         | - m-header        -- header头部组件
+        | - rank            -- 排行页面
+        | - recommend       -- 推荐页面
+        | - search          -- 搜索页面
+        | - singer          -- 歌手页面
+        | - tab             -- Tab栏组件
     | - router          -- 路由配置文件
     | - store           -- vuex相关文件
     | - App.vue
@@ -83,6 +88,7 @@ alias: {
 
 > Markdown说明文件
 
+[1-header头部组件与页面骨架](https://caniuse.com/#search=css%20var)
 
 
 
