@@ -108,8 +108,8 @@ src/components/recommend/recommend.vue
     </div>
   </div>
 </template>
-
-<script type="text/ecmascript-6">
+```
+```javascript
 import Slider from 'base/slider/slider'
 import {getRecommend} from 'api/recommend.js'
 import {ERR_OK} from 'api/config.js'
@@ -136,7 +136,6 @@ export default {
     Slider
   }
 }
-</script>
 ```
 ## <a id="3-轮播组件"></a>3-轮播组件
 [http://ustbhuangyi.github.io/better-scroll/doc/](http://ustbhuangyi.github.io/better-scroll/doc/)
@@ -183,8 +182,8 @@ export function addClass(el, className) {
     </div>
   </div>
 </template>
-
-<script type="text/ecmascript-6">
+```
+```javascript
 import BScroll from 'better-scroll'
 import {addClass} from 'common/js/dom'
 
@@ -207,7 +206,7 @@ export default {
   data() {
     return {
       dots: [],
-      currentPageIndex: 0
+      currentPageIndex: 0  // 当前页码
     }
   },
   mounted() {
@@ -289,6 +288,4 @@ export default {
     clearTimeout(this.timer)
   }
 }
-</script>
 ```
-
