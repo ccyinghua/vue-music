@@ -26,6 +26,10 @@ cnpm install fastclick --save  // 解决移动端一些body点击事件的延迟
 
 cnpm install babel-polyfill --save-dev  // 对ES6的一些新API转义，补丁
 
+cnpm install jsonp --save  // jsonp方式抓取数据https://github.com/webmodules/jsonp  参考02-recommend.md
+
+cnpm install better-scroll --save // 轮播滚动插件 http://ustbhuangyi.github.io/better-scroll/doc/  参考02-recommend.md
+
 ```
 ![](resource/1.jpg)
 
@@ -49,6 +53,7 @@ import 'babel-polyfill'
 | - src
     | - api             -- 放后端请求类的代码(ajax，json请求等)
     | - base            -- 基本通用组件
+      | - slider            -- 轮播组件
     | - common          -- 通用的静态资源
         | - fonts           -- 字体文件
         | - image           -- 图片文件
@@ -86,8 +91,8 @@ alias: {
 
 > Markdown说明文件
 
-[1-header头部组件与页面骨架](https://github.com/ccyinghua/vue-music/blob/master/01-header.md)
-
+- [1-header头部组件与页面骨架](https://github.com/ccyinghua/vue-music/blob/master/01-header.md)<br>
+- [2-recommend推荐页面](https://github.com/ccyinghua/vue-music/blob/master/02-recommend.md)
 
 
 未完待续......
