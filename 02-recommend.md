@@ -6,6 +6,7 @@
 [**1-jsonp抓取数据**](#1-jsonp抓取数据)<br>
 [**2-轮播图数据抓取**](#2-轮播图数据抓取)<br>
 [**3-轮播组件**](#3-轮播组件)<br>
+[**4-歌单**](#4-歌单)<br>
 
 ## <a id="1-jsonp抓取数据"></a>1-jsonp抓取数据
 数据的获取来源于qq音乐 [https://y.qq.com/](https://y.qq.com/)  (移动端network中js方式的请求数据) <br>
@@ -289,3 +290,49 @@ export default {
   }
 }
 ```
+## <a id="4-歌单"></a>4-歌单
+
+数据来源： [https://y.qq.com/portal/playlist.html](https://y.qq.com/portal/playlist.html)
+jsonp歌单数据获取： 
+![](resource/2-recommend/2.jpg)
+![](resource/2-recommend/3.jpg)
+
+src/api/recommend.js
+```javascript
+/**
+ * 歌单数据抓取
+ */
+export function getDiscList() {
+  const url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
+  const data = Object.assign({}, commonParams, {
+    platform: 'yqq',
+    hostUin: 0,
+    sin: 0,
+    ein: 0,
+    sortId: 5,
+    needNewCode: 0,
+    categoryId: 10000000,
+    rnd: Math.random()
+  })
+  return jsonp(url, data, options)
+}
+```
+src/components/recommend/recommend.vue
+```javascript
+created() {
+  this._getDiscList()
+},
+methods: {
+  // 歌单数据抓取
+  _getDiscList() {
+    getDiscList().then((res) => {
+      if (res.code === ERR_OK) {
+        console.log(res.data)
+      }
+    })
+  }
+},
+```
+jsonp请求被服务端拒绝
+......
+

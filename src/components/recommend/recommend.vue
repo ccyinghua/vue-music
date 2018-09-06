@@ -21,8 +21,8 @@
 
 <script type="text/ecmascript-6">
 import Slider from 'base/slider/slider'
-import {getRecommend} from 'api/recommend.js'
-import {ERR_OK} from 'api/config.js'
+import { getRecommend, getDiscList } from 'api/recommend.js'
+import { ERR_OK } from 'api/config.js'
 
 export default {
   data() {
@@ -32,12 +32,22 @@ export default {
   },
   created() {
     this._getRecommend()
+    this._getDiscList()
   },
   methods: {
+    // 轮播图数据获取
     _getRecommend() {
       getRecommend().then((res) => {
         if (res.code === ERR_OK) {
           this.recommends = res.data.slider
+        }
+      })
+    },
+    // 歌单数据抓取
+    _getDiscList() {
+      getDiscList().then((res) => {
+        if (res.code === ERR_OK) {
+          console.log(res.data)
         }
       })
     }
