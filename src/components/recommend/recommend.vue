@@ -1,59 +1,78 @@
 <!-- 推荐页面 -->
 <template>
   <div class="recommend">
-    <div class="recommend-content">
-      <div v-if="recommends.length" class="slider-wrapper">
-        <slider>
-          <div v-for="(item, index) in recommends" :key="index">
-            <a :href="item.linkUrl">
-              <img :src="item.picUrl" alt="">
-            </a>
-          </div>
-        </slider>
+    <!-- better-scroll滚动refresh在于两个地方的数据变化：轮播数据与歌单数据变化时都需重新计算 -->
+    <!-- 传入data:discList歌单数据,因为recommends轮播数据在discList之前获取，有内容了，所以这里传入discList即可 -->
+    <!-- recommends轮播数据存在img图片异步，轮播的内容是由img高度撑起来的，so在img加载时需重新计算better-scroll，即loadImage方法 -->
+    <scroll ref="scroll" class="recommend-content" :data="discList">
+      <div>
+        <!-- 轮播 -->
+        <div v-if="recommends.length" class="slider-wrapper">
+          <slider>
+            <div v-for="(item, index) in recommends" :key="index">
+              <a :href="item.linkUrl">
+                <img :src="item.picUrl" @load="loadImage" alt="">
+              </a>
+            </div>
+          </slider>
+        </div>
+        <!-- 歌单列表 -->
+        <div class="recommend-list">
+          <h1 class="list-title">热门歌单推荐</h1>
+          <ul>
+            <li class="item" v-for="(item, index) in discList" :key="index">
+              <div class="icon">
+                <img width="60" height="60" :src="item.picUrl" alt="">
+              </div>
+              <div class="text">
+                <h2 class="name">{{item.songListDesc}}</h2>
+                <p class="author">{{item.songListAuthor}}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div class="recommend-list">
-        <h1 class="list-title">热门歌单推荐</h1>
-        <ul></ul>
-      </div>
-    </div>
+    </scroll>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+import Scroll from 'base/scroll/scroll'
 import Slider from 'base/slider/slider'
-import { getRecommend, getDiscList } from 'api/recommend.js'
+import { getRecommend } from 'api/recommend.js'
 import { ERR_OK } from 'api/config.js'
 
 export default {
   data() {
     return {
-      recommends: [] // 轮播图数据
+      recommends: [], // 轮播图数据
+      discList: [] // 歌单数据
     }
   },
   created() {
     this._getRecommend()
-    this._getDiscList()
   },
   methods: {
-    // 轮播图数据获取
+    // 推荐数据获取
     _getRecommend() {
       getRecommend().then((res) => {
         if (res.code === ERR_OK) {
-          this.recommends = res.data.slider
+          this.recommends = res.data.slider // 轮播图数据
+          this.discList = res.data.songList // 歌单数据
         }
       })
     },
-    // 歌单数据抓取
-    _getDiscList() {
-      getDiscList().then((res) => {
-        if (res.code === ERR_OK) {
-          console.log(res.data)
-        }
-      })
+    // 轮播img加载时重新计算better-scroll
+    loadImage() {
+      if (!this.checkLoaded) { // 一次加载，一张img加载即达到目的，防止多张img重复刷新
+        this.checkLoaded = true
+        this.$refs.scroll.refresh()
+      }
     }
   },
   components: {
-    Slider
+    Slider,
+    Scroll
   }
 }
 </script>
@@ -100,7 +119,7 @@ export default {
             .name
               margin-bottom: 10px
               color: $color-text
-            .desc
+            .author
               color: $color-text-d
       .loading-container
         position: absolute

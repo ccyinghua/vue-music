@@ -7,6 +7,7 @@
 [**2-轮播图数据抓取**](#2-轮播图数据抓取)<br>
 [**3-轮播组件**](#3-轮播组件)<br>
 [**4-歌单**](#4-歌单)<br>
+- [4.1 公用scroll组件](#41-公用scroll组件)
 
 ## <a id="1-jsonp抓取数据"></a>1-jsonp抓取数据
 数据的获取来源于qq音乐 [https://y.qq.com/](https://y.qq.com/)  (移动端network中js方式的请求数据) <br>
@@ -58,7 +59,7 @@ import jsonp from 'common/js/jsonp.js'
 import {commonParams, options} from './config.js'
 
 /**
- * 轮播图数据抓取
+ * 推荐数据抓取
  */
 export function getRecommend() {
   const url = 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
@@ -291,48 +292,73 @@ export default {
 }
 ```
 ## <a id="4-歌单"></a>4-歌单
-
-数据来源： [https://y.qq.com/portal/playlist.html](https://y.qq.com/portal/playlist.html)
-jsonp歌单数据获取： 
-![](resource/2-recommend/2.jpg)
-![](resource/2-recommend/3.jpg)
-
-src/api/recommend.js
-```javascript
-/**
- * 歌单数据抓取
- */
-export function getDiscList() {
-  const url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
-  const data = Object.assign({}, commonParams, {
-    platform: 'yqq',
-    hostUin: 0,
-    sin: 0,
-    ein: 0,
-    sortId: 5,
-    needNewCode: 0,
-    categoryId: 10000000,
-    rnd: Math.random()
-  })
-  return jsonp(url, data, options)
-}
-```
 src/components/recommend/recommend.vue
 ```javascript
-created() {
-  this._getDiscList()
-},
 methods: {
-  // 歌单数据抓取
-  _getDiscList() {
-    getDiscList().then((res) => {
+  // 推荐数据获取
+  _getRecommend() {
+    getRecommend().then((res) => {
       if (res.code === ERR_OK) {
-        console.log(res.data)
+        this.recommends = res.data.slider // 轮播图数据
+        this.discList = res.data.songList // 歌单数据
       }
     })
   }
 },
 ```
-jsonp请求被服务端拒绝
-......
+```html
+<div class="recommend-list">
+  <h1 class="list-title">热门歌单推荐</h1>
+  <ul>
+    <li class="item" v-for="(item, index) in discList" :key="index">
+      <div class="icon">
+        <img width="60" height="60" :src="item.picUrl" alt="">
+      </div>
+      <div class="text">
+        <h2 class="name">{{item.songListDesc}}</h2>
+        <p class="author">{{item.songListAuthor}}</p>
+      </div>
+    </li>
+  </ul>
+</div>
+```
+### <a id="41-公用scroll组件"></a>4.1 公用scroll组件
+base/scroll/scroll.vue
 
+src/components/recommend/recommend.vue
+```html
+<!-- better-scroll滚动refresh在于两个地方的数据变化：轮播数据与歌单数据变化时都需重新计算 -->
+<!-- 传入data:discList歌单数据,因为recommends轮播数据在discList之前获取，有内容了，所以这里传入discList即可 -->
+<!-- recommends轮播数据存在img图片异步，轮播的内容是由img高度撑起来的，so在img加载时需重新计算better-scroll，即loadImage方法 -->
+<scroll ref="scroll" class="recommend-content" :data="discList">
+  <div>
+    <!-- 轮播 -->
+    <div v-if="recommends.length" class="slider-wrapper">
+      ......
+      <img :src="item.picUrl" @load="loadImage" alt="">
+      ......
+    </div>
+    <!-- 歌单列表 -->
+    <div class="recommend-list">
+      ......
+    </div>
+  </div>
+</scroll>
+```
+```javascript
+import Scroll from 'base/scroll/scroll'
+methods: {
+  // 轮播img加载时重新计算better-scroll
+  loadImage() {
+    if (!this.checkLoaded) { // 一次加载，一张img加载即达到目的，防止多张img重复刷新
+      this.checkLoaded = true
+      this.$refs.scroll.refresh()
+    }
+  }
+},
+components: {
+  Slider
+}
+```
+
+![](resource/2-recommend/2.jpg)
