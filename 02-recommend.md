@@ -7,7 +7,10 @@
 [**2-轮播图数据抓取**](#2-轮播图数据抓取)<br>
 [**3-轮播组件**](#3-轮播组件)<br>
 [**4-歌单**](#4-歌单)<br>
-- [4.1 公用scroll组件](#41-公用scroll组件)
+- [4.1 公用scroll组件](#41-公用scroll组件)<br>
+
+[**5-vue-lazyload懒加载**](#5-vue-lazyload懒加载)<br>
+[**6-loading基础组件**](#6-loading基础组件)
 
 ## <a id="1-jsonp抓取数据"></a>1-jsonp抓取数据
 数据的获取来源于qq音乐 [https://y.qq.com/](https://y.qq.com/)  (移动端network中js方式的请求数据) <br>
@@ -325,6 +328,7 @@ methods: {
 ### <a id="41-公用scroll组件"></a>4.1 公用scroll组件
 base/scroll/scroll.vue
 
+使用：
 src/components/recommend/recommend.vue
 ```html
 <!-- better-scroll滚动refresh在于两个地方的数据变化：轮播数据与歌单数据变化时都需重新计算 -->
@@ -360,5 +364,44 @@ components: {
   Slider
 }
 ```
+如果此时banner点击跳转不了，better-scroll默认派发click事件，有可能是better-scroll与fastclick冲突了，可以在轮播图的a标签加上`class="needsclick"`解决。
+
+## <a id="5-vue-lazyload懒加载"></a>5-vue-lazyload懒加载
+
+[https://github.com/hilongjw/vue-lazyload](https://github.com/hilongjw/vue-lazyload)
+
+```javascript
+cnpm install vue-lazyload --save
+```
+src/main.js
+```javascript
+import VueLazyLoad from 'vue-lazyload'
+Vue.use(VueLazyLoad, {
+  loading: require('common/image/default.png') // 默认图片
+})
+```
+src/components/recommend/recommend.vue
+```html
+<img width="60" height="60" v-lazy="item.picUrl" alt="">
+```
+
+## <a id="6-loading基础组件"></a>6-loading基础组件
+
+src/base/loading
+
+使用:src/components/recommend/recommend.vue
+```javascript
+<div class="loading-container" v-show="!discList.length">
+  <loading></loading>
+</div>
+
+import Loading from 'base/loading/loading'
+export default {
+  components: {
+    Loading
+  }
+}
+```
 
 ![](resource/2-recommend/2.jpg)
+

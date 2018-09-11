@@ -22,13 +22,16 @@ cnpm install stylus stylus-loader --save-dev  // 安装stylus处理css
 
 cnpm install babel-runtime --save  // 对ES语法进行转义 
 
-cnpm install fastclick --save  // 解决移动端一些body点击事件的延迟
+cnpm install fastclick --save  // 解决移动端一些body点击事件的延迟https://github.com/ftlabs/fastclick
 
 cnpm install babel-polyfill --save-dev  // 对ES6的一些新API转义，补丁
 
-cnpm install jsonp --save  // jsonp方式抓取数据https://github.com/webmodules/jsonp  参考02-recommend.md
+// 02-recommend.md
+cnpm install jsonp --save  // jsonp方式抓取数据https://github.com/webmodules/jsonp
 
-cnpm install better-scroll --save // 轮播滚动插件 http://ustbhuangyi.github.io/better-scroll/doc/  参考02-recommend.md
+cnpm install better-scroll --save // 轮播滚动插件 http://ustbhuangyi.github.io/better-scroll/doc/
+
+cnpm install vue-lazyload --save  // 图片懒加载https://github.com/hilongjw/vue-lazyload
 
 ```
 ![](resource/1.jpg)
