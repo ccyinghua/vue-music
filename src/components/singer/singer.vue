@@ -7,6 +7,7 @@
 <script type="text/ecmascript-6">
 import { getSingerList } from 'api/singer'
 import { ERR_OK } from 'api/config'
+import Singer from 'common/js/singer'
 
 const HOT_NAME = '热门'
 const HOT_SINGRT_LEN = 10 // 热门数据为10条
@@ -26,7 +27,7 @@ export default {
       getSingerList().then((res) => {
         if (res.code === ERR_OK) {
           this.singers = res.data.list
-          console.log(this.singers)
+          console.log(this._normalLizeSinger(this.singers))
         }
       })
     },
@@ -41,11 +42,10 @@ export default {
       list.forEach((item, index) => {
         // 填充热门数据
         if (index < HOT_SINGRT_LEN) {
-          map.hot.items.push({
+          map.hot.items.push(new Singer({
             id: item.Fsinger_mid,
-            name: item.Fsinger_name,
-            avatar: `https://y.gtimg.cn/music/photo_new/T001R300x300M000${item.Fsinger_mid}.jpg?max_age=259200`
-          })
+            name: item.Fsinger_name
+          }))
         }
         const key = item.Findex
         if (!map[key]) {
@@ -54,12 +54,28 @@ export default {
             items: []
           }
         }
-        map[key].items.push({
+        map[key].items.push(new Singer({
           id: item.Fsinger_mid,
-          name: item.Fsinger_name,
-          avatar: `https://y.gtimg.cn/music/photo_new/T001R300x300M000${item.Fsinger_mid}.jpg?max_age=259200`
-        })
+          name: item.Fsinger_name
+        }))
       })
+      // console.log(map)
+      // 为了得到有序列表，处理 map
+      let hot = []
+      let ret = []
+      for (let key in map) {
+        let val = map[key]
+        if (val.title.match(/[a-zA-Z]/)) { // 匹配字母
+          ret.push(val)
+        } else if (val.title === HOT_NAME) { // 匹配"热门"
+          hot.push(val)
+        }
+      }
+      // 对ret数组进行字母排序a-z
+      ret.sort((a, b) => {
+        return a.title.charCodeAt(0) - b.title.charCodeAt(0)
+      })
+      return hot.concat(ret)
     }
   }
 }
