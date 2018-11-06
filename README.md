@@ -2,6 +2,8 @@
 
 > vue移动端音乐WebApp
 
+预览：[http://htmlpreview.github.io/?https://github.com/ccyinghua/vue-music/blob/master/dist/index.html](http://htmlpreview.github.io/?https://github.com/ccyinghua/vue-music/blob/master/dist/index.html)
+
 ### 运行项目
 
 ```javascript

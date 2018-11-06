@@ -148,5 +148,11 @@ methods:{
 处理map后：
 ![](resource/3-singer/3.jpg)
 
-## <a id="3-基础组件-滚动列表"></a>3-基础组件-滚动列表
+## <a id="3-列表组件渲染-右侧字母列表"></a>3-列表组件渲染-右侧字母列表
+
+1、在规范化数据，得到想要的格式的数据之后，将数据渲染在歌手页中，列表的渲染在 [base/listview/listview.vue](https://github.com/ccyinghua/vue-music/blob/master/src/base/listview/listview.vue) 中，列表的渲染包括：
+- 歌手数据渲染(歌手数据由父组件singer.vue提供)
+- 右侧字母列表渲染(字母列表提取歌手数据的title)
+
+2、字母列表添加点击事件
 
