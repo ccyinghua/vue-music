@@ -27,7 +27,7 @@ export function addClass(el, className) {
  * 操作'data-'属性
  * @param {*} el    dom对象
  * @param {*} name  属性'data-'后面的字段，例'data-index',name值为'index'
- * @param {*} val   val值，如果传入val值代表要设置data-属性，不传入代表只获取元素的'data-'属性
+ * @param {*} val   val值，如果传入val值代表要设置元素的data-属性，不传入代表只获取元素的'data-'属性
  */
 export function getData(el, name, val) {
   const prefix = 'data-'

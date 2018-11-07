@@ -1,9 +1,16 @@
 <!-- 字母列表组件 -->
 <template>
-  <scroll class="listview" :data="data">
+  <scroll
+    class="listview"
+    ref="listview"
+    :data="data"
+    :probeType="probeType"
+    :listenScroll="listenScroll"
+    @scroll="scroll"
+    >
     <!-- 歌手列表 -->
     <ul>
-      <li v-for="group in data" :key="group.title" class="list-group">
+      <li v-for="group in data" :key="group.title" class="list-group" ref="listgroup">
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
           <li v-for="item in group.items" :key="item.id" class="list-group-item">
@@ -14,9 +21,15 @@
       </li>
     </ul>
     <!-- 右侧字母列表 -->
-    <div class="list-shortcut" @touchstart="onShortcutTouchStart">
+    <div class="list-shortcut" @touchstart="onShortcutTouchStart" @touchmove.stop.prevent="onshortcutTouchMove">
       <ul>
-        <li v-for="(item, index) in shortcutList" :key="item" class="item" :data-index="index">{{item}}</li>
+        <li v-for="(item, index) in shortcutList"
+            :key="item"
+            class="item"
+            :class="{'current': currentIndex === index}"
+            :data-index="index">
+          {{item}}
+        </li>
       </ul>
     </div>
   </scroll>
@@ -24,6 +37,10 @@
 
 <script type="text/ecmascript-6">
 import Scroll from 'base/scroll/scroll'
+import { getData } from 'common/js/dom'
+
+// const TITLE_HEIGHT = 30 // 左侧歌手列表title的高度
+const ANCHOR_HEIGHT = 18 // 字母列表每个字母的高度
 
 export default {
   name: '',
@@ -35,6 +52,18 @@ export default {
       }
     }
   },
+  created() {
+    this.touch = {}
+    this.probeType = 3 // 设置实时派发scroll事件
+    this.listenScroll = true // 设置监听滚动传入子组件
+    this.listHeight = [] // 左歌手列表每个group的所在高度集合
+  },
+  data() {
+    return {
+      scrollY: -1, // 实时滚动的y的距离
+      currentIndex: 0 // 当前应高亮的index
+    }
+  },
   computed: {
     shortcutList() { // 获取字母列表(数组) shortcutList = ['热',A,...,Z]
       return this.data.map((group) => {
@@ -42,19 +71,68 @@ export default {
       })
     }
   },
-  data() {
-    return {
-    }
-  },
   mounted() {
   },
   methods: {
-    // 字母点击
-    onShortcutTouchStart() {
-
+    // 字母列表手指按下
+    onShortcutTouchStart(e) {
+      // e.target为按下的字母： 例按下A字母输出 '<li data-index="1" class="item">A</li>'
+      console.log(e.target)
+      let anchorIndex = getData(e.target, 'index')
+      let firstTouch = e.touches[0] // e.touches当前跟踪的触摸操作的touch对象的数组
+      this.touch.y1 = firstTouch.pageY // 触摸目标在页面中的y坐标
+      this.touch.anchorIndex = anchorIndex // 记录刚开始按下的index
+      // this.$refs.listview.scrollToElement(this.$refs.listgroup[anchorIndex], 0)
+      this._scrollTo(anchorIndex)
+    },
+    // 手指在字母列表滑动时
+    onshortcutTouchMove(e) {
+      let firstTouch = e.touches[0]
+      this.touch.y2 = firstTouch.pageY
+      let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0 // y轴的偏移个数
+      let anchorIndex = parseInt(this.touch.anchorIndex + delta) // 得到手指移动后所在的字母index
+      this._scrollTo(anchorIndex)
+    },
+    // 接收子组件派发的滚动事件
+    scroll(pos) {
+      this.scrollY = pos.y
+    },
+    // 设置滚动
+    _scrollTo(anchorIndex) {
+      this.$refs.listview.scrollToElement(this.$refs.listgroup[anchorIndex], 0)
+    },
+    // 计算左侧歌手列表每个group的高度
+    _calculateHeight() {
+      this.listHeight = []
+      const list = this.$refs.listgroup
+      let height = 0
+      this.listHeight.push(height) // 第1个group所在高度为0
+      for (let i = 0; i < list.length; i++) {
+        let item = list[i]
+        height += item.clientHeight
+        this.listHeight.push(height)
+      }
     }
   },
   watch: {
+    data() {
+      setTimeout(() => {
+        this._calculateHeight()
+      }, 20)
+    },
+    scrollY(newY) {
+      const listHeight = this.listHeight
+      for (let i = 0; i < listHeight.length; i++) {
+        let height1 = listHeight[i]
+        let height2 = listHeight[i + 1]
+        if (!height2 || (-newY > height1 && -newY < height2)) { // i是最后一个，或滚动到了上一个与下一个之间
+          this.currentIndex = i // 第i个高亮
+          console.log(this.currentIndex)
+          return
+        }
+      }
+      this.currentIndex = 0
+    }
   },
   components: {
     Scroll

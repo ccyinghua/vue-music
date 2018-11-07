@@ -96,8 +96,9 @@ alias: {
 
 > Markdown说明文件
 
-- [1-header头部组件与页面骨架](https://github.com/ccyinghua/vue-music/blob/master/01-header.md)<br>
+- [1-header头部组件与页面骨架](https://github.com/ccyinghua/vue-music/blob/master/01-header.md)
 - [2-recommend推荐页面](https://github.com/ccyinghua/vue-music/blob/master/02-recommend.md)
+- [3-singer歌手页面](https://github.com/ccyinghua/vue-music/blob/master/03-singer.md)
 
 
 未完待续......

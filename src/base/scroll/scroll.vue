@@ -27,6 +27,10 @@ export default {
     data: {
       type: Array,
       default: null
+    },
+    listenScroll: { // 是否监听滚动
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -50,6 +54,13 @@ export default {
         probeType: this.probeType,
         click: this.click
       })
+
+      if (this.listenScroll) {
+        let self = this
+        this.scroll.on('scroll', (pos) => {
+          self.$emit('scroll', pos) // 派发事件，传送滚动时的位置信息
+        })
+      }
     },
     disable() { // 禁用 better-scroll
       this.scroll && this.scroll.disable()
@@ -59,6 +70,12 @@ export default {
     },
     refresh() { // 重新计算 better-scroll
       this.scroll && this.scroll.refresh()
+    },
+    scrollTo() { // 滚动到指定位置
+      this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments)
+    },
+    scrollToElement() { // 滚动到指定的目标元素
+      this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
     }
   },
   watch: {
