@@ -99,6 +99,17 @@ export default {
     },
     // 设置滚动
     _scrollTo(anchorIndex) {
+      console.log(anchorIndex)
+      // 设置点击.list-shortcut边界无反应
+      if (!anchorIndex && anchorIndex !== 0) {
+        return
+      }
+      if (anchorIndex < 0) { // 手指移动至字母列表顶部空白区域,设置第一个高亮
+        anchorIndex = 0
+      } else if (anchorIndex > this.listHeight.length - 2) { // 手指移动至字母列表底部空白区域，设置最后一个高亮
+        anchorIndex = this.listHeight.length - 2
+      }
+      this.scrollY = -this.listHeight[anchorIndex] // 手动设置scrollY,实现点击字母对应高亮
       this.$refs.listview.scrollToElement(this.$refs.listgroup[anchorIndex], 0)
     },
     // 计算左侧歌手列表每个group的高度
@@ -121,17 +132,25 @@ export default {
       }, 20)
     },
     scrollY(newY) {
+      // console.log(newY)
       const listHeight = this.listHeight
-      for (let i = 0; i < listHeight.length; i++) {
+      // 当滚动到顶部，newY > 0
+      if (newY > 0) {
+        this.currentIndex = 0
+        return
+      }
+      // 在中间部分滚动
+      for (let i = 0; i < (listHeight.length - 1); i++) {
         let height1 = listHeight[i]
         let height2 = listHeight[i + 1]
-        if (!height2 || (-newY > height1 && -newY < height2)) { // i是最后一个，或滚动到了上一个与下一个之间
+        if (-newY >= height1 && -newY < height2) { // i滚动到了上一个与下一个之间
           this.currentIndex = i // 第i个高亮
-          console.log(this.currentIndex)
+          // console.log(this.currentIndex)
           return
         }
       }
-      this.currentIndex = 0
+      // 当滚动到底部，且-newY大于最后一个元素的上限(即listHeight的倒数第二个值)
+      this.currentIndex = listHeight.length - 2
     }
   },
   components: {

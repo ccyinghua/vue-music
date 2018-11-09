@@ -324,6 +324,10 @@ export default {
     }
   },
   methods: {
+    // 接收子组件派发的滚动事件
+    scroll(pos) {
+      this.scrollY = pos.y
+    },
     // 计算左侧歌手列表每个group的高度
     _calculateHeight() {
       this.listHeight = []
@@ -359,5 +363,54 @@ export default {
   }
 }
 ```
+以上 监听`scrollY`存在明显问题，当滚动到顶部或者底部时，有时会存在右侧字母没有一个高亮的情况，修改监听`scrollY`逻辑
 
+```javascript
+scrollY(newY) {
+  // console.log(newY)
+  const listHeight = this.listHeight
+  // 当滚动到顶部，newY > 0
+  if (newY > 0) {
+    this.currentIndex = 0
+    return
+  }
+  // 在中间部分滚动
+  for (let i = 0; i < (listHeight.length - 1); i++) {
+    let height1 = listHeight[i]
+    let height2 = listHeight[i + 1]
+    if (-newY >= height1 && -newY < height2) { // i滚动到了上一个与下一个之间
+      this.currentIndex = i // 第i个高亮
+      console.log(this.currentIndex)
+      return
+    }
+  }
+  // 当滚动到底部，且-newY大于最后一个元素的上限(即listHeight的倒数第二个值)
+  this.currentIndex = listHeight.length - 2
+}
+```
+
+### <a id="35-点击字母对应高亮"></a>3.5-点击字母对应高亮
+
+目前已做到滚动时对应高亮，滚动高亮是由监听滚动获取滚动位置设置的，当点击字母时，滚到指定位置时通过better-scroll的滚到指定元素`scrollToElement`方法设置的，并没有触发better-scroll的监听滚动。
+- 在点击字母时`_scrollTo`方法已经设置了滚动到指定元素，可以在滚动时手动设置`scrollY`的值(因为高亮是监听scrollY设置的)
+- 字母列表手指按下与手指移动事件(`touchstart`与`touchmove`)是对于字母列表整个div添加的，需要考虑一下字母以外的边界位置的触碰
+
+base/listview/listview.vue
+```javascript
+// 设置滚动
+_scrollTo(anchorIndex) {
+  console.log(anchorIndex)
+  // 设置点击.list-shortcut边界无反应
+  if (!anchorIndex && anchorIndex !== 0) {
+    return
+  }
+  if (anchorIndex < 0) { // 手指移动至字母列表顶部空白区域,设置第一个高亮
+    anchorIndex = 0
+  } else if (anchorIndex > this.listHeight.length - 2) { // 手指移动至字母列表底部空白区域，设置最后一个高亮
+    anchorIndex = this.listHeight.length - 2
+  }
+  this.scrollY = -this.listHeight[anchorIndex] // 手动设置scrollY,实现点击字母对应高亮
+  this.$refs.listview.scrollToElement(this.$refs.listgroup[anchorIndex], 0)
+}
+```
 
