@@ -3,8 +3,16 @@
 > 歌手页面
 
 ## 目录
-[**1-歌手数据抓取**](#1-歌手数据抓取)
-- [1.1 xxx](#11-xxx)
+- [**1-歌手数据抓取**](#1-歌手数据抓取)
+- [**2-规范化数据**](#2-规范化数据)
+- [**3-列表组件渲染与右侧字母列表**](#3-列表组件渲染与右侧字母列表)
+  - [3.1-数据渲染](#31-数据渲染)
+  - [3.2-字母列表添加手指按下滚到指定位置](#32-字母列表添加手指按下滚到指定位置)
+  - [3.3-手指在字母列表滑动时滚动到指定位置](#33-手指在字母列表滑动时滚动到指定位置)
+  - [3.4-左右列表联动，字母高亮](#34-左右列表联动，字母高亮)
+  - [3.5-点击字母对应高亮](#35-点击字母对应高亮)
+  - [3.6-实现滚动固定标题](#36-实现滚动固定标题)
+  - [3.7-添加loading](#37-添加loading)
 
 ## <a id="1-歌手数据抓取"></a>1-歌手数据抓取
 
@@ -414,3 +422,74 @@ _scrollTo(anchorIndex) {
 }
 ```
 
+### <a id="36-实现滚动固定标题"></a>3.6-实现滚动固定标题
+
+- 滚动时顶部显示对应标题
+- 列表标题与顶部固定显示标题即将重合时有个过渡效果，把上一个标题顶上去的效果
+
+1、标题显示
+base/listview/listview.vue
+```html
+<!-- 固定标题 -->
+<div class="list-fixed" ref="fixed" v-show="fixedTitle">
+  <div class="fixed-title">{{fixedTitle}}</div>
+</div>
+```
+```javascript
+computed: {
+  fixedTitle() {
+    if (this.scrollY > 0) {
+      return ''
+    }
+    return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
+  }
+},
+```
+2、过渡效果<br>
+- 获取下一个标题与顶部固定标题的距离值(在监听滚动时可以获取)
+- 当两个标题栏即将有重合，但是又不完全重合时，计算重合的部分，设置顶部标题在Y轴向上移动对应距离，呈现类似标题更换效果。
+
+```javascript
+data() {
+  return {
+    diff: -1 // 中间滚动时，列表标题栏与顶部固定标题栏的距离差
+  }
+},
+watch: {
+  scrollY(newY) {
+    ...
+    // 在中间部分滚动时
+    this.diff = height2 + newY
+    ...
+  },
+  diff(newVal) {
+    // (newVal > 0 && newVal < TITLE_HEIGHT)代表列表标题与顶部标题栏有重合但是没有完全重合
+    let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0
+    if (this.fixedTop === fixedTop) {
+      return
+    }
+    this.fixedTop = fixedTop
+    this.$refs.fixed.style.transform = `translate3d(0, ${fixedTop}px, 0)`
+  }
+}
+```
+![](resource/3-singer/4.jpg)
+![](resource/3-singer/5.jpg)
+
+### <a id="37-添加loading"></a>3.7-添加loading
+```html
+<!-- loading -->
+<div v-show="!data.length" class="loading-container">
+  <loading></loading>
+</div>
+<script type="text/ecmascript-6">
+import Loading from 'base/loading/loading'
+export default {
+  components: {
+    Loading
+  }
+}
+</script>
+```
+歌手页面：<br>
+![](resource/3-singer/6.jpg)

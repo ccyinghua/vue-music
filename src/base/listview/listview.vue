@@ -32,14 +32,23 @@
         </li>
       </ul>
     </div>
+    <!-- 固定标题 -->
+    <div class="list-fixed" ref="fixed" v-show="fixedTitle">
+      <div class="fixed-title">{{fixedTitle}}</div>
+    </div>
+    <!-- loading -->
+    <div v-show="!data.length" class="loading-container">
+      <loading></loading>
+    </div>
   </scroll>
 </template>
 
 <script type="text/ecmascript-6">
 import Scroll from 'base/scroll/scroll'
+import Loading from 'base/loading/loading'
 import { getData } from 'common/js/dom'
 
-// const TITLE_HEIGHT = 30 // 左侧歌手列表title的高度
+const TITLE_HEIGHT = 30 // 左侧歌手列表title的高度
 const ANCHOR_HEIGHT = 18 // 字母列表每个字母的高度
 
 export default {
@@ -61,7 +70,8 @@ export default {
   data() {
     return {
       scrollY: -1, // 实时滚动的y的距离
-      currentIndex: 0 // 当前应高亮的index
+      currentIndex: 0, // 当前应高亮的index
+      diff: -1 // 中间滚动时，列表标题栏与顶部固定标题栏的距离差
     }
   },
   computed: {
@@ -69,6 +79,12 @@ export default {
       return this.data.map((group) => {
         return group.title.substr(0, 1)
       })
+    },
+    fixedTitle() {
+      if (this.scrollY > 0) {
+        return ''
+      }
+      return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
     }
   },
   mounted() {
@@ -146,15 +162,26 @@ export default {
         if (-newY >= height1 && -newY < height2) { // i滚动到了上一个与下一个之间
           this.currentIndex = i // 第i个高亮
           // console.log(this.currentIndex)
+          this.diff = height2 + newY
           return
         }
       }
       // 当滚动到底部，且-newY大于最后一个元素的上限(即listHeight的倒数第二个值)
       this.currentIndex = listHeight.length - 2
+    },
+    diff(newVal) {
+      // (newVal > 0 && newVal < TITLE_HEIGHT)代表列表标题与顶部标题栏有重合但是没有完全重合
+      let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0
+      if (this.fixedTop === fixedTop) {
+        return
+      }
+      this.fixedTop = fixedTop
+      this.$refs.fixed.style.transform = `translate3d(0, ${fixedTop}px, 0)`
     }
   },
   components: {
-    Scroll
+    Scroll,
+    Loading
   }
 }
 </script>
